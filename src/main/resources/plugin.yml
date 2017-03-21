@@ -1,0 +1,11 @@
+name: Man10Gacha
+version: ${project.version}
+main: red.man10.gacha.Gacha
+prefix: Man10Gacha
+authors: [takatronix, Sho0]
+website: http://man10.red
+commands:
+   mgacha:
+      description: Man10 Gacha(Gambling item machine) system
+      permission: man10.gacha
+      permission-message: You don't have <permission>
