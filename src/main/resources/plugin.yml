@@ -1,6 +1,6 @@
 name: Man10Gacha
 version: ${project.version}
-main: red.man10.gacha.Gacha
+main: red.man10.gacha.GachaPlugin
 prefix: Man10Gacha
 authors: [takatronix, Sho0]
 website: http://man10.red
