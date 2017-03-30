@@ -64,6 +64,8 @@ public class GachaRunnable {
                             }
                         }
                     }
+                    p.getInventory().addItem(inv.getItem(13));
+                    p.playSound(p.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,1,1);
                     p.sendMessage("§e§lおめでとうございます！『" + name + "§e§l』が当たりました");
                     plugin.playerState.put(p,"done");
                     if(plugin.playerState.isEmpty()){
@@ -83,12 +85,6 @@ public class GachaRunnable {
             }
         }.runTaskTimer(plugin,0,time);
     }
-
-
-    public void rollTicket(Inventory i,int time,Player p,String file){
-
-    }
-
 
 /*
     public void roll(Player p,ItemFrame itemFrame,String file){

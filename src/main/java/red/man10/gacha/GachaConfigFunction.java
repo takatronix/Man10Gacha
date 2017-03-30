@@ -60,24 +60,33 @@ public class GachaConfigFunction {
         return 27;
     }
 
+    void getLog(String s){
+        Bukkit.getServer().getLogger().info(s);
+    }
     public List<ItemStack> fileItemsToList(String file) {
+        getLog("start fileitems to list");
         List<ItemStack> items = new ArrayList<>();
         String fileName = file;
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + fileName + ".yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(f);
+        getLog("starting for loop");
         for(int i = 0; i < getSlotsFromFile(file); i++){
             if(data.getItemStack("item." + i) != null) {
+                getLog("added item" + i);
+                getLog(data.getString("item." + i));
                 items.add(data.getItemStack("item." + i));
             }
             if(data.getItemStack("item." + i) == null){
-                items.add(null);
+                getLog(data.getString("item." + i));
+                getLog("added null");
             }
         }
-        return fileItemsToListRemoveNull(items);
+        getLog("returning list with" + items.size() + "");
+        return items;
     }
 
-    List<ItemStack> fileItemsToListRemoveNull(List<ItemStack> items) {
+    /*List<ItemStack> fileItemsToListRemoveNull(List<ItemStack> items) {
         List<ItemStack> removed = new ArrayList<ItemStack>();
         for (ItemStack item : items) {
             if (item != null) {
@@ -85,7 +94,7 @@ public class GachaConfigFunction {
             }
         }
         return removed;
-    }
+    }*/
 
     public void createSignConfig(){
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);

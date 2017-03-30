@@ -85,7 +85,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
                                 //playerState.put(p, "rolling");
                                 someOneInMenu = true;
-                                gachaGUI.spinMenu(p, id, 1, data.getString("gacha." + id + ".title"));
+                                gachaGUI.spinMenu(p, id, 1, data.getString("gacha." + id + ".title"));//ここバグ
                                 return;
                             }
                         }
