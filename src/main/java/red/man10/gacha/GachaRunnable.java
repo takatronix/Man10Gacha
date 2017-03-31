@@ -34,20 +34,12 @@ public class GachaRunnable {
                 Random r = new Random();
                 int result = r.nextInt(items.size());
                 itemnumber[5] = result;
-                inv.setItem(9, inv.getItem(10));
-                inv.setItem(10, inv.getItem(11));
-                inv.setItem(11, inv.getItem(12));
-                inv.setItem(12, inv.getItem(13));
-                inv.setItem(13, inv.getItem(14));
-                inv.setItem(14, inv.getItem(15));
-                inv.setItem(15, inv.getItem(16));
-                inv.setItem(16, inv.getItem(17));
-                inv.setItem(17, new ItemStack(Material.AIR));
-                itemnumber[0] = itemnumber[1];
-                itemnumber[1] = itemnumber[2];
-                itemnumber[2] = itemnumber[3];
-                itemnumber[3] = itemnumber[4];
-                itemnumber[4] = itemnumber[5];
+                for(int i = 0; i < 8;i++){
+                    inv.setItem(i+9,inv.getItem(i+10));
+                }
+                for(int i = 0; i < 5; i++) {
+                    itemnumber[i] = itemnumber[i+1];
+                }
                 p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE,1,1);
                 inv.setItem(17,items.get(result));
                 a++;

@@ -125,6 +125,21 @@ public class GachaCommand implements CommandExecutor {
             return true;
         }
 
+        if(args[0].equalsIgnoreCase("lock")){
+            if(!p.hasPermission("man10.gacha.lock")){
+                p.sendMessage(plugin.prefix + "あなたにはガチャをロックする権限はありません");
+                return true;
+            }
+            if(plugin.onLockDown == true){
+                plugin.onLockDown = false;
+                p.sendMessage(plugin.prefix + "ガチャのロックを解除しました");
+                return true;
+            }
+            plugin.onLockDown = true;
+            p.sendMessage(plugin.prefix + "ガチャをロックしました");
+            return true;
+        }
+
         if(args[0].equalsIgnoreCase("setprice")){
             if(!p.hasPermission("man10.gacha.setprice")){
                 p.sendMessage(plugin.prefix + "あなたには値段を設定する権限を持っていません");
@@ -146,6 +161,15 @@ public class GachaCommand implements CommandExecutor {
                 p.sendMessage(plugin.prefix + "値段は数字のみです");
                 return true;
             }
+        }
+        if(args[0].equalsIgnoreCase("reload")){
+            if(!p.hasPermission("man10.gacha.reload")){
+                p.sendMessage(plugin.prefix + "あなたにはコンフィグをリロードする権限はありません");
+                return true;
+            }
+            p.sendMessage(plugin.prefix + "コンフィグをリロードしました");
+            plugin.loadConfig();
+            return true;
         }
         if(args[0].equalsIgnoreCase("create")){
             if(!p.hasPermission("man10.gacha.create")){
@@ -174,10 +198,6 @@ public class GachaCommand implements CommandExecutor {
         }
 
         if(args[0].equalsIgnoreCase("help")){
-            if(!p.hasPermission("man10.gacha.help")){
-                p.sendMessage(plugin.prefix + "あなたにはヘルプを使う権限はありません");
-                return true;
-            }
             showHelp(sender);
             return true;
         }
@@ -190,6 +210,7 @@ public class GachaCommand implements CommandExecutor {
         }
         return true;
     }
+
 
 
     //      ヘルプ表示

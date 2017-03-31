@@ -17,7 +17,6 @@ import red.man10.VaultManager;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 
 public final class GachaPlugin extends JavaPlugin implements Listener {
@@ -29,9 +28,30 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
 
     HashMap<Player,String> playerState = new HashMap<>();
 
-    String prefix = "§6[§aMg§fac§dha§6]§f§l§n";
+    String prefix = "§6[§aMg§fac§dha§6]§f§l";
 
     public boolean someOneInMenu = false;
+    public boolean onLockDown = false;
+
+    public FileConfiguration signsConfig = null;
+    public FileConfiguration gachaConfig = null;
+
+    public void loadConfig(){
+        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
+        File f = new File(dataa, File.separator + "signs.yml");
+        if(!f.exists()){
+            configFunction.createSignConfig();
+        }
+        signsConfig = YamlConfiguration.loadConfiguration(f);
+
+        File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
+        File ff = new File(dataaa, File.separator + "gachas.yml");
+        gachaConfig = YamlConfiguration.loadConfiguration(ff);
+        if(!f.exists()){
+            configFunction.createGachaConfig();
+        }
+    }
+
 
     @Override
     public void onEnable() {
@@ -40,6 +60,8 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         getCommand("mgacha").setExecutor(new GachaCommand(this));
         vault = new VaultManager(this);
         configFunction.createSignConfig();
+        configFunction.searchForMissingSigns();
+        loadConfig();
 
     }
 
@@ -62,6 +84,10 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getState() instanceof Sign) {
                 if (((Sign) e.getClickedBlock().getState()).getLine(0).contains("§b===============")) {
+                    if(onLockDown == true){
+                        e.getPlayer().sendMessage(prefix + "現在このガチャは使用できません");
+                        return;
+                    }
                     String id = configFunction.locationToId(e.getClickedBlock().getLocation());
                     if (id == null) {
                         return;
@@ -72,38 +98,35 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             return;
                         }
                     }
-                    File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-                    File ff = new File(dataaa, File.separator + "gachas.yml");
-                    FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
-                    String linkedChest = data.getString("gacha." + id + ".linkedChest");
+                    String linkedChest = gachaConfig.getString("gacha." + id + ".linkedChest");
                     Player p = e.getPlayer();
                     UUID uuid = p.getUniqueId();
                     if(!p.hasPermission("man10.gacha.use." + id)){
-                        p.sendMessage(prefix + "あなたは" + data.get("gacha." + id  + ".title") + "を回す権限はありません");
+                        p.sendMessage(prefix + "あなたは" + gachaConfig.get("gacha." + id  + ".title") + "を回す権限はありません");
                         return;
                     }
                     double balance = vault.getBalance(uuid);
-                    ItemStack item = data.getItemStack("gacha." + id + ".ticket");
-                    if(data.getString("gacha." + id + ".payType").equalsIgnoreCase("ticket")) {
+                    ItemStack item = gachaConfig.getItemStack("gacha." + id + ".ticket");
+                    if(gachaConfig.getString("gacha." + id + ".payType").equalsIgnoreCase("ticket")) {
                         ItemStack itemInHand = p.getInventory().getItemInMainHand();
                         if(itemInHand.getType() == item.getType()){
                             if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
                                 playerState.put(p, "rolling");
                                 someOneInMenu = true;
-                                gachaGUI.spinMenu(p, linkedChest, 1, data.getString("gacha." + id + ".title"));
+                                gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
                                 return;
                             }
                         }
                     }
-                    if (data.getString("gacha." + id + ".payType").equalsIgnoreCase("balance")) {
-                        if (balance < data.getDouble("gacha." + id + ".price")) {
+                    if (gachaConfig.getString("gacha." + id + ".payType").equalsIgnoreCase("balance")) {
+                        if (balance < gachaConfig.getDouble("gacha." + id + ".price")) {
                             p.sendMessage(prefix + "残金が足りません");
                             return;
                         }
-                        vault.withdraw(uuid, data.getDouble("gacha." + id + ".price"));
+                        vault.withdraw(uuid, gachaConfig.getDouble("gacha." + id + ".price"));
                         playerState.put(p, "rolling");
                         someOneInMenu = true;
-                        gachaGUI.spinMenu(p, linkedChest, 1, data.getString("gacha." + id + ".title"));
+                        gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
                     }
                 }
             }
@@ -146,16 +169,13 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                 e.getBlock().breakNaturally();
                 return;
             }
-            if(e.getPlayer().hasPermission("man10.gacha.sign.create")){
+            if(!e.getPlayer().hasPermission("man10.gacha.sign.create")){
                 e.getPlayer().sendMessage(prefix + "あなたには看板を作成する権限はありません");
                 e.setCancelled(true);
                 e.getBlock().breakNaturally();
                 return;
             }
-            File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-            File f = new File(dataa, File.separator + "gachas.yml");
-            FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-            if(data.get("gacha." + e.getLine(1)) == null){
+            if(gachaConfig.get("gacha." + e.getLine(1)) == null){
                 e.getPlayer().sendMessage(prefix + "§c§lガチャが存在しません");
                 e.setCancelled(true);
                 e.getBlock().breakNaturally();
@@ -169,31 +189,15 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             e.setLine(3,"§b===============");
 
 
-            if(data.getString("gacha." + line1 + ".payType").equalsIgnoreCase("balance")){
-                e.setLine(2, String.valueOf(data.getDouble("gacha." + line1 + ".price")));
+            if(gachaConfig.getString("gacha." + line1 + ".payType").equalsIgnoreCase("balance")){
+                e.setLine(2, String.valueOf(gachaConfig.getDouble("gacha." + line1 + ".price")));
                 return;
             }
-            if(data.getString("gacha." + line1 + ".payType").equalsIgnoreCase("ticket")){
+            if(gachaConfig.getString("gacha." + line1 + ".payType").equalsIgnoreCase("ticket")){
                 e.setLine(2, "ticket");
                 return;
             }
-
-            //さらに下にコンフィグからアレイに戻す処理
         }
-    }
-    public int getSlotsFromFile(String file){
-        String fileName = file;
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
-        File f = new File(dataa, File.separator + fileName + ".yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        boolean isLargeChest = data.getBoolean("isLargeChest");
-        if(isLargeChest == true){
-            return 54;
-        }
-        if(isLargeChest == false){
-            return 27;
-        }
-        return 27;
     }
 
 }

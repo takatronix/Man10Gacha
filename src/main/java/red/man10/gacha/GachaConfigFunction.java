@@ -27,24 +27,6 @@ public class GachaConfigFunction {
 
 
 
-    public ItemStack getRandomItemFromFile(String file){
-        String fileName = file;
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
-        File f = new File(dataa, File.separator + fileName + ".yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        boolean on = true;
-        while(on == true) {
-            Random r = new Random();
-            int result = r.nextInt(getSlotsFromFile(file));
-            if (!data.get("item." + result).equals("null")) {
-                on = false;
-                return ((ItemStack) data.get("item." + result));
-            }else{
-            }
-        }
-        return null;
-    }
-
     public int getSlotsFromFile(String file){
         String fileName = file;
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
@@ -95,19 +77,6 @@ public class GachaConfigFunction {
                 f.createNewFile();
                 data.set("signs", "");
                 data.save(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void createYmlConfig(String name){
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + name + ".yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        if(!f.exists()){
-            try {
-                f.createNewFile();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -185,6 +154,10 @@ public class GachaConfigFunction {
         File f = new File(dataa, File.separator + "signs.yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(f);
         Set<String> list = data.getConfigurationSection("signs").getKeys(false);
+        if(!f.exists()){
+            createSignConfig();
+            return "none";//ポイント１
+        }
         for(int i = 0; i < list.size(); i++){
             java.lang.Object obj = data.get("signs." + list.toArray()[i]);
             List objlist = data.getList("signs." + list.toArray()[i]);
@@ -223,7 +196,6 @@ public class GachaConfigFunction {
     public int createGacha(String name, String linkedChest,String title,String payType, double price, ItemStack ticket, Player p){
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + linkedChest + ".yml");
-
 
         if(payType.equalsIgnoreCase("ticket") && ticket.getType() == Material.AIR){
             p.sendMessage("チケットを手に持ってください");
@@ -285,6 +257,7 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
     }
     public void deleteSignLocation(Location location){
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
@@ -321,6 +294,7 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
     }
 
     public boolean setPrice(String id,double price){
@@ -359,6 +333,10 @@ public class GachaConfigFunction {
         FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
         java.lang.Object obj = data.get("gacha." + id);
         List list = idToLocation(id);
+        if(!ff.exists()){
+            createGachaConfig();
+            return false;
+        }
         removeSignsFromLocations(list);
         if(obj == null){
             return false;
@@ -369,7 +347,44 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
         return true;
+    }
+
+    public void searchForMissingSigns(){
+        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
+        File f = new File(dataa, File.separator + "signs.yml");
+        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
+        Set<String> list = data.getConfigurationSection("signs").getKeys(false);
+        if(!f.exists()){
+            createSignConfig();
+            return;
+        }
+        for(int i = 0;i < list.size(); i++){
+            Object obj = data.get("signs." + list.toArray()[i]);
+            if(obj == null){
+            }
+            List objlist = data.getList("signs." + list.toArray()[i]);
+            if(obj != null && objlist == null){
+                Location loc = (Location) obj;
+                if(loc.getBlock().getState() instanceof Sign == false){
+                    loc.getBlock().setType(Material.AIR);
+                    Bukkit.getServer().getLogger().info(loc.toString() + "に看板が見つからなかったため消去しました");
+                    deleteSignLocation(loc);
+                }
+            }
+            if(obj != null && objlist != null){
+                for(int ii = 0; ii < objlist.size(); ii++){
+                    Location loc = (Location) objlist.get(ii);
+                    if(loc.getBlock().getState() instanceof Sign == false){
+                        loc.getBlock().setType(Material.AIR);
+                        Bukkit.getServer().getLogger().info(loc.toString() + "に看板が見つからなかったため消去しました");
+                        deleteSignLocation(loc);
+                    }
+                }
+            }
+        }
+        plugin.loadConfig();
     }
 
     public boolean setGachaWin(String id,boolean state){
@@ -377,6 +392,10 @@ public class GachaConfigFunction {
         File ff = new File(dataaa, File.separator + "gachas.yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
         java.lang.Object obj = data.get("gacha." + id);
+        if(!ff.exists()){
+            createGachaConfig();
+            return false;
+        }
         if(obj == null){
             return false;
         }
@@ -386,12 +405,17 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
         return true;
     }
     public boolean enableWinBroadcast(String id, boolean state){
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
+        if(!ff.exists()){
+            createGachaConfig();
+            return false;
+        }
         java.lang.Object obj = data.get("gacha." + id);
         if(obj == null){
             return false;
@@ -402,6 +426,7 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
         return true;
     }
 
@@ -409,6 +434,10 @@ public class GachaConfigFunction {
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
+        if(!ff.exists()){
+            createGachaConfig();
+            return false;
+        }
         java.lang.Object obj = data.get("gacha." + id);
         if(obj == null){
             return false;
@@ -419,6 +448,7 @@ public class GachaConfigFunction {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        plugin.loadConfig();
         return true;
     }
 
@@ -429,24 +459,9 @@ public class GachaConfigFunction {
             if(b.getState() instanceof Sign){
                 b.setType(Material.AIR);
             }
-
         }
     }
 
-    public void removeSignsFromID(String id){
-        List list = idToLocation(id);
-        for(int i = 0; i < list.size(); i++){
-            Location l = (Location) list.get(i);
-            Block b = l.getBlock();
-            if(b.getState() instanceof Sign){
-                Sign s = (Sign) b.getState();
-                if(s.getLine(0).equalsIgnoreCase("§b===============")){
-                    b.setType(Material.AIR);
-                }
-            }
-
-        }
-    }
     public boolean winBroadcastIsTrue(String id){
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
@@ -459,7 +474,6 @@ public class GachaConfigFunction {
         if(obj == null){
             return false;
         }
-
         return data.getBoolean("gacha." + id + ".enableWinBroadcast");
     }
     public boolean winIsTrue(String id){
@@ -492,8 +506,5 @@ public class GachaConfigFunction {
         }
         return data.getString("gacha." + id + ".winMessage");
     }
-
-
-
 
 }
