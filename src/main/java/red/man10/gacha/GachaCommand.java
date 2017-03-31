@@ -1,30 +1,14 @@
 package red.man10.gacha;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.entity.EntityInteractEvent;
-import org.bukkit.inventory.ItemFactory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
 import java.io.File;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -47,6 +31,10 @@ public class GachaCommand implements CommandExecutor {
         }
 
         if(args[0].equalsIgnoreCase("setenablewin")){
+            if(!p.hasPermission("man10.gacha.setenablewin")){
+                p.sendMessage(plugin.prefix + "あなたには勝利設定する権限はありません");
+                return true;
+            }
             if(args.length < 3) {
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
                 return true;
@@ -66,6 +54,10 @@ public class GachaCommand implements CommandExecutor {
         }
 
         if(args[0].equalsIgnoreCase("setenablewinmessage")){
+            if(!p.hasPermission("man10.gacha.setenablewinmessage")){
+                p.sendMessage(plugin.prefix + "あなたには勝利メッセージを設定する権限はありません");
+                return true;
+            }
             if(args.length < 3) {
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
                 return true;
@@ -85,6 +77,10 @@ public class GachaCommand implements CommandExecutor {
         }
 
         if(args[0].equalsIgnoreCase("setwinmessage")){
+            if(!p.hasPermission("man10.gacha.setwinmessage")){
+                p.sendMessage(plugin.prefix + "あなたには勝利メッセージを設定する権限はありません");
+                return true;
+            }
             if(args.length < 3) {
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
                 return true;
@@ -98,15 +94,24 @@ public class GachaCommand implements CommandExecutor {
             p.sendMessage(plugin.prefix + args[1] + "の勝者放送設定を『" + message + "』に設定しました");
         }
         if(args[0].equalsIgnoreCase("list")){
+            if(!p.hasPermission("man10.gacha.list")){
+                p.sendMessage(plugin.prefix + "あなたにはガチャリストを見る権限はありません");
+                return true;
+            }
             File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
             File f = new File(dataa, File.separator + "gachas.yml");
             FileConfiguration data = YamlConfiguration.loadConfiguration(f);
             Set<String> list = data.getConfigurationSection("gacha").getKeys(false);
+            p.sendMessage("==========§7§l§nガチャリスト===========");
             for(int i= 0; i < list.size(); i++){
-                p.sendMessage(String.valueOf(list.toArray()[i]));
+                p.sendMessage("§f§l" + String.valueOf(list.toArray()[i]));
             }
         }
         if(args[0].equalsIgnoreCase("delete")){
+            if(!p.hasPermission("man10.gacha.delete")){
+                p.sendMessage(plugin.prefix + "あなたにはガチャを消去する権限はありません");
+                return true;
+            }
             if(args.length < 2){
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
                 return true;
@@ -119,8 +124,13 @@ public class GachaCommand implements CommandExecutor {
             p.sendMessage(plugin.prefix + args[1] + "を消去しました");
             return true;
         }
+
         if(args[0].equalsIgnoreCase("setprice")){
-            if(args.length < 2){
+            if(!p.hasPermission("man10.gacha.setprice")){
+                p.sendMessage(plugin.prefix + "あなたには値段を設定する権限を持っていません");
+                return true;
+            }
+            if(args.length < 3){
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
                 return true;
             }
@@ -138,6 +148,10 @@ public class GachaCommand implements CommandExecutor {
             }
         }
         if(args[0].equalsIgnoreCase("create")){
+            if(!p.hasPermission("man10.gacha.create")){
+                p.sendMessage(plugin.prefix + "あなたにはガチャを作成する権限を持っていません");
+                return true;
+            }
             if(args.length < 5){
                 p.sendMessage(plugin.prefix + "引数が足りません /mgacha create 名前 リンクチェスト タイトル 支払い方法 値段");
                 return true;
@@ -160,6 +174,10 @@ public class GachaCommand implements CommandExecutor {
         }
 
         if(args[0].equalsIgnoreCase("help")){
+            if(!p.hasPermission("man10.gacha.help")){
+                p.sendMessage(plugin.prefix + "あなたにはヘルプを使う権限はありません");
+                return true;
+            }
             showHelp(sender);
             return true;
         }

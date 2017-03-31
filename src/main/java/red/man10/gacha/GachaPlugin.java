@@ -75,17 +75,22 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                     File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
                     File ff = new File(dataaa, File.separator + "gachas.yml");
                     FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
+                    String linkedChest = data.getString("gacha." + id + ".linkedChest");
                     Player p = e.getPlayer();
                     UUID uuid = p.getUniqueId();
+                    if(!p.hasPermission("man10.gacha.use." + id)){
+                        p.sendMessage(prefix + "あなたは" + data.get("gacha." + id  + ".title") + "を回す権限はありません");
+                        return;
+                    }
                     double balance = vault.getBalance(uuid);
                     ItemStack item = data.getItemStack("gacha." + id + ".ticket");
                     if(data.getString("gacha." + id + ".payType").equalsIgnoreCase("ticket")) {
                         ItemStack itemInHand = p.getInventory().getItemInMainHand();
                         if(itemInHand.getType() == item.getType()){
                             if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
-                                //playerState.put(p, "rolling");
+                                playerState.put(p, "rolling");
                                 someOneInMenu = true;
-                                gachaGUI.spinMenu(p, id, 1, data.getString("gacha." + id + ".title"));//ここバグ
+                                gachaGUI.spinMenu(p, linkedChest, 1, data.getString("gacha." + id + ".title"));
                                 return;
                             }
                         }
@@ -98,7 +103,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                         vault.withdraw(uuid, data.getDouble("gacha." + id + ".price"));
                         playerState.put(p, "rolling");
                         someOneInMenu = true;
-                        gachaGUI.spinMenu(p, id, 1, data.getString("gacha." + id + ".title"));
+                        gachaGUI.spinMenu(p, linkedChest, 1, data.getString("gacha." + id + ".title"));
                     }
                 }
             }
@@ -141,6 +146,12 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                 e.getBlock().breakNaturally();
                 return;
             }
+            if(e.getPlayer().hasPermission("man10.gacha.sign.create")){
+                e.getPlayer().sendMessage(prefix + "あなたには看板を作成する権限はありません");
+                e.setCancelled(true);
+                e.getBlock().breakNaturally();
+                return;
+            }
             File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
             File f = new File(dataa, File.separator + "gachas.yml");
             FileConfiguration data = YamlConfiguration.loadConfiguration(f);
@@ -170,25 +181,6 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             //さらに下にコンフィグからアレイに戻す処理
         }
     }
-
-    public ItemStack getRandomItemFromFile(String file){
-        String fileName = file;
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
-        File f = new File(dataa, File.separator + fileName + ".yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        boolean on = true;
-        while(on == true) {
-            Random r = new Random();
-            int result = r.nextInt(getSlotsFromFile(file));
-            if (!data.get("item." + result).equals("null")) {
-                on = false;
-                return ((ItemStack) data.get("item." + result));
-            }else{
-            }
-        }
-        return null;
-    }
-
     public int getSlotsFromFile(String file){
         String fileName = file;
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
