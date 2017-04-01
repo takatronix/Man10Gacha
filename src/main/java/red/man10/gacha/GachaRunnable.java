@@ -1,13 +1,13 @@
 package red.man10.gacha;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.io.File;
@@ -46,13 +46,21 @@ public class GachaRunnable {
                     p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
                     inv.setItem(17, items.get(result));
                     a++;
-                    if (a >= 25 && time == 4) {//ループ終了処理
+                    if (a >= 25 && time == 4) {
                         String name = inv.getItem(13).getItemMeta().getDisplayName();
                         if (name == null) {
                             name = inv.getItem(13).getType().name();
                         }
                         if (plugin.configFunction.winIsTrue(file) == true) {
-                            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                            if(itemnumber[0] == 0) {
+                                p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                                Location loc = new Location(p.getWorld(),p.getLocation().getX(),p.getLocation().getY()-1,p.getLocation().getZ());
+                                Firework fw = p.getWorld().spawn(loc, Firework.class);
+                                FireworkMeta fwm = fw.getFireworkMeta();
+                                FireworkEffect effect = FireworkEffect.builder().withColor(Color.BLUE.mixColors(Color.YELLOW.mixColors(Color.WHITE))).with(FireworkEffect.Type.BALL).withFade(Color.BLACK).build();
+                                fwm.addEffects(effect);
+                                fw.setFireworkMeta(fwm);
+                            }
                             if (plugin.configFunction.winBroadcastIsTrue(file) == true) {
                                 if (itemnumber[0] == 0) {
                                     String message = plugin.configFunction.getWinBroadcast(file).replaceAll("%PLAYER%", p.getName()).replaceAll("%TITLE%", inv.getName()).replaceAll("%ITEM%", name).replaceAll("%AMMOUNT%", String.valueOf(inv.getItem(13).getAmount()));
@@ -69,17 +77,17 @@ public class GachaRunnable {
                             plugin.someOneInMenu = false;
                         }
                         cancel();
+                        return;
                     }
-                /*if(a >= 15 && time == 3){
-                    roll(inv,4,p,file);
-                    cancel();
+                    if (a >= 15 && time == 3) {
+                        roll(inv, 4, p, file);
+                        cancel();
+                    }
+                    if (a >= 25) {
+                        roll(inv, 3, p, file);
+                        cancel();
+                    }
                 }
-                if(a >= 25){
-                    roll(inv,3,p,file);
-                    cancel();
-                }*/
-                return;
-            }
         }.runTaskTimer(plugin,0,time);
     }
 
@@ -88,9 +96,6 @@ public class GachaRunnable {
             p.playSound(p.getLocation(),Sound.BLOCK_ANVIL_USE,1,1);
         }
     }
-
-
-
 /*
     public void roll(Player p,ItemFrame itemFrame,String file){
         String fileName = file;
