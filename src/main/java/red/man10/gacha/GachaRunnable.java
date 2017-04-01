@@ -34,41 +34,42 @@ public class GachaRunnable {
             List<ItemStack> items = plugin.configFunction.fileItemsToList(file);
             int[] itemnumber = new int[6];
             public void run() {
-                Random r = new Random();
-                int result = r.nextInt(items.size());
-                itemnumber[5] = result;
-                for(int i = 0; i < 8;i++){
-                    inv.setItem(i+9,inv.getItem(i+10));
-                }
-                for(int i = 0; i < 5; i++) {
-                    itemnumber[i] = itemnumber[i+1];
-                }
-                p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE,1,1);
-                inv.setItem(17,items.get(result));
-                a++;
-                if(a >= 25 && time == 4){//ループ終了処理
-                    String name = inv.getItem(13).getItemMeta().getDisplayName();
-                    if(name == null){
-                        name = inv.getItem(13).getType().name();
+                    Random r = new Random();
+                    int result = r.nextInt(items.size());
+                    itemnumber[5] = result;
+                    for (int i = 0; i < 8; i++) {
+                        inv.setItem(i + 9, inv.getItem(i + 10));
                     }
-                    if(plugin.configFunction.winIsTrue(file) == true){
-                        if(plugin.configFunction.winBroadcastIsTrue(file) == true) {
-                            if(itemnumber[0] == 0) {
-                                String message = plugin.configFunction.getWinBroadcast(file).replaceAll("%PLAYER%", p.getName()).replaceAll("%TITLE%", inv.getName()).replaceAll("%ITEM%", name).replaceAll("%AMMOUNT%", String.valueOf(inv.getItem(13).getAmount()));
-                                getServer().broadcastMessage(message);
-                                playAnvilSoundToAllPlayers();
+                    for (int i = 0; i < 5; i++) {
+                        itemnumber[i] = itemnumber[i + 1];
+                    }
+                    p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
+                    inv.setItem(17, items.get(result));
+                    a++;
+                    if (a >= 25 && time == 4) {//ループ終了処理
+                        String name = inv.getItem(13).getItemMeta().getDisplayName();
+                        if (name == null) {
+                            name = inv.getItem(13).getType().name();
+                        }
+                        if (plugin.configFunction.winIsTrue(file) == true) {
+                            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
+                            if (plugin.configFunction.winBroadcastIsTrue(file) == true) {
+                                if (itemnumber[0] == 0) {
+                                    String message = plugin.configFunction.getWinBroadcast(file).replaceAll("%PLAYER%", p.getName()).replaceAll("%TITLE%", inv.getName()).replaceAll("%ITEM%", name).replaceAll("%AMMOUNT%", String.valueOf(inv.getItem(13).getAmount()));
+                                    getServer().broadcastMessage(message);
+                                    playAnvilSoundToAllPlayers();
+                                }
                             }
                         }
+                        p.getInventory().addItem(inv.getItem(13));
+                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+                        p.sendMessage("§e§lおめでとうございます！『" + name + "§e§l』が当たりました");
+                        plugin.playerState.put(p, "done");
+                        if (plugin.playerState.isEmpty()) {
+                            plugin.someOneInMenu = false;
+                        }
+                        cancel();
                     }
-                    p.getInventory().addItem(inv.getItem(13));
-                    p.playSound(p.getLocation(),Sound.ENTITY_PLAYER_LEVELUP,1,1);
-                    p.sendMessage("§e§lおめでとうございます！『" + name + "§e§l』が当たりました");
-                    plugin.playerState.put(p,"done");
-                    if(plugin.playerState.isEmpty()){
-                        plugin.someOneInMenu = false;
-                    }
-                    cancel();
-                }
                 /*if(a >= 15 && time == 3){
                     roll(inv,4,p,file);
                     cancel();
@@ -77,7 +78,7 @@ public class GachaRunnable {
                     roll(inv,3,p,file);
                     cancel();
                 }*/
-
+                return;
             }
         }.runTaskTimer(plugin,0,time);
     }
