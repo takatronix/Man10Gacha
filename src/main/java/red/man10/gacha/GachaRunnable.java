@@ -13,6 +13,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+
+import static org.bukkit.Bukkit.getServer;
 
 /**
  * Created by sho-pc on 2017/03/23.
@@ -43,7 +46,7 @@ public class GachaRunnable {
                 p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE,1,1);
                 inv.setItem(17,items.get(result));
                 a++;
-                if(a >= 25 && time == 3){
+                if(a >= 25 && time == 4){//ループ終了処理
                     String name = inv.getItem(13).getItemMeta().getDisplayName();
                     if(name == null){
                         name = inv.getItem(13).getType().name();
@@ -52,7 +55,8 @@ public class GachaRunnable {
                         if(plugin.configFunction.winBroadcastIsTrue(file) == true) {
                             if(itemnumber[0] == 0) {
                                 String message = plugin.configFunction.getWinBroadcast(file).replaceAll("%PLAYER%", p.getName()).replaceAll("%TITLE%", inv.getName()).replaceAll("%ITEM%", name).replaceAll("%AMMOUNT%", String.valueOf(inv.getItem(13).getAmount()));
-                                Bukkit.getServer().broadcastMessage(message);
+                                getServer().broadcastMessage(message);
+                                playAnvilSoundToAllPlayers();
                             }
                         }
                     }
@@ -65,18 +69,26 @@ public class GachaRunnable {
                     }
                     cancel();
                 }
-                if(a >= 30 && time == 2){
+                /*if(a >= 15 && time == 3){
+                    roll(inv,4,p,file);
+                    cancel();
+                }
+                if(a >= 25){
                     roll(inv,3,p,file);
                     cancel();
-                }
-                if(a >= 50){
-                    roll(inv,2,p,file);
-                    cancel();
-                }
+                }*/
 
             }
         }.runTaskTimer(plugin,0,time);
     }
+
+    void playAnvilSoundToAllPlayers(){
+        for(Player p : Bukkit.getOnlinePlayers()){
+            p.playSound(p.getLocation(),Sound.BLOCK_ANVIL_USE,1,1);
+        }
+    }
+
+
 
 /*
     public void roll(Player p,ItemFrame itemFrame,String file){

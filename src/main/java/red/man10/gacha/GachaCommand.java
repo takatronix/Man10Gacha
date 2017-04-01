@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.Set;
@@ -196,16 +197,22 @@ public class GachaCommand implements CommandExecutor {
             }
             return true;
         }
-
         if(args[0].equalsIgnoreCase("help")){
             showHelp(sender);
             return true;
         }
         if(args[0].equalsIgnoreCase("get")){
-            if(args.length != 2){
-                return false;
+            if(args.length < 2){
+                p.sendMessage(plugin.prefix + "引数が足りません /mgacha help");
+                return true;
             }
-            //plugin.giveController((Player)sender,args[1]);
+            if(plugin.gachaConfig.getString("gacha." + args[1] + ".payType").equalsIgnoreCase("balance")){
+                p.sendMessage(plugin.prefix + args[1] + "の支払い方法はチケットではありません");
+                return true;
+            }
+            ItemStack item = plugin.gachaConfig.getItemStack("gacha." + args[1] + ".ticket");
+            p.getInventory().addItem(item);
+            p.sendMessage(plugin.prefix + "チケットを追加しました");
             return true;
         }
         return true;
@@ -217,15 +224,18 @@ public class GachaCommand implements CommandExecutor {
     void showHelp(CommandSender p){
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§c赤色は管理者コマンド");
+        p.sendMessage("§c/mgacha create - ガチャを作成する");
+        p.sendMessage("§c/mgacha delete - ガチャを消去する");
+        p.sendMessage("§c/mgacha setprice - ガチャの価格を設定する");
+        p.sendMessage("§c/mgacha setenablewin - ガチャの勝利設定をする");
+        p.sendMessage("§c/mgacha setenablewinmessage - ガチャの勝利時のメッセージを設定する");
+        p.sendMessage("§c/mgacha lock - ガチャのロックダウンをトグルする");
         p.sendMessage("§c/mgacha list - 作成されたガチャリストを表示する");
-        p.sendMessage("§c/mgacha play [ガチャ名] - ガチャを開く");
-        p.sendMessage("§c/mgacha get [ガチャ名] - ガチャ券を手に入れる");
-        p.sendMessage("§c/mgacha give [ガチャ名] [ユーザー名] - ガチャ券をユーザーにわたす");
-        p.sendMessage("§c/mgacha data [ガチャ名] - ガチャの統計データを表示する");
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
         p.sendMessage("§ecreated by takatronix http://takatronix.com");
         p.sendMessage("§ecreated by takatronix http://twitter.com/takatronix");
+        p.sendMessage("§ealso created by Sho0");
     }
 
 }

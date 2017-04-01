@@ -312,6 +312,7 @@ public class GachaConfigFunction {
             e.printStackTrace();
         }
         updatePrice(id,price);
+        plugin.loadConfig();
         return true;
     }
     void updatePrice(String id,double price){

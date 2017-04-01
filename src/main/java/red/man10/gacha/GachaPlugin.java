@@ -66,20 +66,6 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onInventoryClose(InventoryCloseEvent e){
-        if(someOneInMenu == true){
-            if(!playerState.isEmpty()) {
-                if (playerState.get(e.getPlayer()) != null && playerState.get(e.getPlayer()).equalsIgnoreCase("done")) {
-                    playerState.remove(e.getPlayer());
-                    if (playerState.isEmpty()) {
-                        someOneInMenu = false;
-                    }
-                }
-            }
-        }
-    }
-
-    @EventHandler
     public void onInteract(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getState() instanceof Sign) {
@@ -111,11 +97,17 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                         ItemStack itemInHand = p.getInventory().getItemInMainHand();
                         if(itemInHand.getType() == item.getType()){
                             if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
+                                p.getInventory().remove(item);
                                 playerState.put(p, "rolling");
                                 someOneInMenu = true;
                                 gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
                                 return;
                             }
+                            p.getInventory().getItemInMainHand().setAmount(p.getInventory().getItemInMainHand().getAmount() -1);
+                            playerState.put(p, "rolling");
+                            someOneInMenu = true;
+                            gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"));
+                            return;
                         }
                     }
                     if (gachaConfig.getString("gacha." + id + ".payType").equalsIgnoreCase("balance")) {
@@ -126,7 +118,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                         vault.withdraw(uuid, gachaConfig.getDouble("gacha." + id + ".price"));
                         playerState.put(p, "rolling");
                         someOneInMenu = true;
-                        gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
+                        gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"));
                     }
                 }
             }
@@ -138,7 +130,13 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             return;
         }
         if(playerState.get(e.getWhoClicked()) != null) {
-            if (playerState.get(e.getWhoClicked()).equalsIgnoreCase("rolling") || playerState.get(e.getWhoClicked()).equalsIgnoreCase("done")) {
+            if(playerState.get(e.getWhoClicked()).equalsIgnoreCase("done")){
+                e.setCancelled(true);
+                playerState.remove(e.getWhoClicked());
+                e.getWhoClicked().closeInventory();
+                return;
+            }
+            if (playerState.get(e.getWhoClicked()).equalsIgnoreCase("rolling")) {
                 e.setCancelled(true);
                 return;
             }
