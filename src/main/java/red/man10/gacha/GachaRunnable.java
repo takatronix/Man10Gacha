@@ -30,10 +30,16 @@ public class GachaRunnable {
     public void roll(Inventory inv,int time,Player p,String file){
         new BukkitRunnable(){
             int a = 0;
+            int count = 1;
+            int countcount = 0;
             //int slots = plugin.configFunction.getSlotsFromFile(file);
             List<ItemStack> items = plugin.configFunction.fileItemsToList(file);
             int[] itemnumber = new int[6];
             public void run() {
+                if (a > count) {
+                    a = 0;
+                    countcount++;
+                    count = count + 2;
                     Random r = new Random();
                     int result = r.nextInt(items.size());
                     itemnumber[5] = result;
@@ -45,16 +51,21 @@ public class GachaRunnable {
                     }
                     p.playSound(p.getLocation(), Sound.BLOCK_DISPENSER_DISPENSE, 1, 1);
                     inv.setItem(17, items.get(result));
-                    a++;
-                    if (a >= 25 && time == 4) {
+                    if (countcount < 20) {
+                        count = count - 2;
+                    }
+                    if (countcount < 30) {
+                        count = count - 1;
+                    }
+                    if (countcount == 40) {
                         String name = inv.getItem(13).getItemMeta().getDisplayName();
                         if (name == null) {
                             name = inv.getItem(13).getType().name();
                         }
                         if (plugin.configFunction.winIsTrue(file) == true) {
-                            if(itemnumber[0] == 0) {
+                            if (itemnumber[0] == 0) {
                                 p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1, 1);
-                                Location loc = new Location(p.getWorld(),p.getLocation().getX(),p.getLocation().getY()-1,p.getLocation().getZ());
+                                Location loc = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY() - 1, p.getLocation().getZ());
                                 Firework fw = p.getWorld().spawn(loc, Firework.class);
                                 FireworkMeta fwm = fw.getFireworkMeta();
                                 FireworkEffect effect = FireworkEffect.builder().withColor(Color.BLUE.mixColors(Color.YELLOW.mixColors(Color.WHITE))).with(FireworkEffect.Type.BALL).withFade(Color.BLACK).build();
@@ -79,15 +90,9 @@ public class GachaRunnable {
                         cancel();
                         return;
                     }
-                    if (a >= 15 && time == 3) {
-                        roll(inv, 4, p, file);
-                        cancel();
-                    }
-                    if (a >= 25) {
-                        roll(inv, 3, p, file);
-                        cancel();
-                    }
                 }
+                a++;
+            }
         }.runTaskTimer(plugin,0,time);
     }
 
