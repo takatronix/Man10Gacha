@@ -454,6 +454,9 @@ public class GachaConfigFunction {
     }
 
     public void removeSignsFromLocations(List list){
+        if(list == null || list.size() == 0){
+            return;
+        }
         for(int i = 0; i < list.size(); i++){
             Location l = (Location) list.get(i);
             Block b = l.getBlock();

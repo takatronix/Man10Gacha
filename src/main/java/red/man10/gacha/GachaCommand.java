@@ -194,7 +194,9 @@ public class GachaCommand implements CommandExecutor {
                 p.sendMessage(plugin.prefix + "ガチャを作成しました : " + name);
             }catch (NumberFormatException e){
                 p.sendMessage(plugin.prefix + "値段は数字だけです");
+                return true;
             }
+            Bukkit.getServer().dispatchCommand(p,"mgacha reload");
             return true;
         }
         if(args[0].equalsIgnoreCase("help")){
@@ -223,14 +225,15 @@ public class GachaCommand implements CommandExecutor {
     //      ヘルプ表示
     void showHelp(CommandSender p){
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
-        p.sendMessage("§c赤色は管理者コマンド");
         p.sendMessage("§c/mgacha create - ガチャを作成する");
         p.sendMessage("§c/mgacha delete - ガチャを消去する");
         p.sendMessage("§c/mgacha setprice - ガチャの価格を設定する");
         p.sendMessage("§c/mgacha setenablewin - ガチャの勝利設定をする");
         p.sendMessage("§c/mgacha setenablewinmessage - ガチャの勝利時のメッセージを設定する");
+        p.sendMessage("§c/mgacha setwinmessage - 勝利じのメッセージを設定");
         p.sendMessage("§c/mgacha lock - ガチャのロックダウンをトグルする");
         p.sendMessage("§c/mgacha list - 作成されたガチャリストを表示する");
+        p.sendMessage("§c/mgacha reload - コンフィグのリロード");
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
         p.sendMessage("§ecreated by takatronix http://takatronix.com");
