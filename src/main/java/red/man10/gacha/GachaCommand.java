@@ -199,6 +199,14 @@ public class GachaCommand implements CommandExecutor {
             Bukkit.getServer().dispatchCommand(p,"mgacha reload");
             return true;
         }
+        if(args[0].equalsIgnoreCase("placeholders")){
+            p.sendMessage("§5===================================");
+            p.sendMessage("§c%PLAYER%  当てたプレイヤーの名前を表示する");
+            p.sendMessage("§c%ITEM% 当てたアイテムの名前を表示する");
+            p.sendMessage("§c%AMMOUNT% 当てたアイテムの個数を表示する");
+            p.sendMessage("§c%TITLE% 当てたガチャのタイトルを表示する");
+            p.sendMessage("§5===================================");
+        }
         if(args[0].equalsIgnoreCase("help")){
             showHelp(sender);
             return true;
@@ -230,7 +238,9 @@ public class GachaCommand implements CommandExecutor {
         p.sendMessage("§c/mgacha setprice - ガチャの価格を設定する");
         p.sendMessage("§c/mgacha setenablewin - ガチャの勝利設定をする");
         p.sendMessage("§c/mgacha setenablewinmessage - ガチャの勝利時のメッセージを設定する");
-        p.sendMessage("§c/mgacha setwinmessage - 勝利じのメッセージを設定");
+        p.sendMessage("§c/mgacha setwinmessage - 勝利時のメッセージを設定");
+        p.sendMessage("§c/mgacha setwinmessage - 勝利時のメッセージを設定");
+        p.sendMessage("§c/mgacha placeholders - 勝利メッセージのプレイスホルダーを表示する");
         p.sendMessage("§c/mgacha lock - ガチャのロックダウンをトグルする");
         p.sendMessage("§c/mgacha list - 作成されたガチャリストを表示する");
         p.sendMessage("§c/mgacha reload - コンフィグのリロード");

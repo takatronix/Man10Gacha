@@ -104,11 +104,11 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                         }
                         double balance = vault.getBalance(uuid);
                         ItemStack item = gachaConfig.getItemStack("gacha." + id + ".ticket");
+                        int ammount = item.getAmount();
                         if(gachaConfig.getString("gacha." + id + ".payType").equalsIgnoreCase("ticket")) {
                             ItemStack itemInHand = p.getInventory().getItemInMainHand();
                             if(itemInHand.getType() == item.getType()){
                                 if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
-                                    int ammount = item.getAmount();
                                     if(p.getInventory().getItemInMainHand().getAmount() < ammount){
                                         if(item.getItemMeta().getDisplayName() == null){
                                             p.sendMessage(prefix + item.getType().name() + "§fが" + ammount + "枚必要です");
@@ -123,13 +123,9 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                                     gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
                                     return;
                                 }
-                                p.getInventory().getItemInMainHand().setAmount(p.getInventory().getItemInMainHand().getAmount() -1);
-                                playerState.put(p, "rolling");
-                                someOneInMenu = true;
-                                gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"));
+                                p.sendMessage(prefix + item.getItemMeta().getDisplayName() + "§fが" + ammount + "枚必要です");
                                 return;
                             }else{
-                                int ammount = item.getAmount();
                                 if(p.getInventory().getItemInMainHand().getAmount() < ammount){
                                     if(item.getItemMeta().getDisplayName() == null){
                                         p.sendMessage(prefix + item.getType().name() + "§fが" + ammount + "枚必要です");
