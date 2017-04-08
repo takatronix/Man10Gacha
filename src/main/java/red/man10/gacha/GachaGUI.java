@@ -1,6 +1,7 @@
 package red.man10.gacha;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,7 +16,7 @@ public class GachaGUI {
         this.plugin = plugin;
     }
 
-    public void spinMenu(Player p,String filename,int time,String title){
+    public void spinMenu(Player p,String filename,int time,String title,double price,Location l){
         Inventory inv = Bukkit.createInventory(null,27,title);
         ItemStack blackGlass = new ItemStack(Material.STAINED_GLASS_PANE,1, (byte) 15);
         ItemStack redGlass = new ItemStack(Material.STAINED_GLASS_PANE,1, (byte) 14);
@@ -27,6 +28,6 @@ public class GachaGUI {
         inv.setItem(4,redGlass);
         inv.setItem(22,redGlass);
         p.openInventory(inv);
-        plugin.gachaRunnable.roll(inv, time,p, filename);
+        plugin.gachaRunnable.roll(inv, time,p, filename,price,l);
     }
 }

@@ -9,8 +9,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import red.man10.MySQLFunc;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.List;
 import java.util.Random;
 import java.util.Timer;
@@ -27,7 +29,7 @@ public class GachaRunnable {
         this.plugin = plugin;
     }
 
-    public void roll(Inventory inv,int time,Player p,String file){
+    public void roll(Inventory inv,int time,Player p,String file,double price,Location l){
         new BukkitRunnable(){
             int a = 0;
             int count = 1;
@@ -59,6 +61,7 @@ public class GachaRunnable {
                     }
                     if (countcount == 40) {
                         String name = inv.getItem(13).getItemMeta().getDisplayName();
+                        plugin.mysql.execute("insert into `man10_gacha` values ('0', '" + p.getUniqueId() +  "', '" + p.getName() + "', '" + file + "', '" + price + "', '" + Base64.getEncoder().encodeToString(name.getBytes()) + "', '" + l.getWorld().getName() + "', '" + l.getX() + "', '" + l.getY() + "', '" + l.getZ() + "', " + plugin.currentTime() + ");");
                         if (name == null) {
                             name = inv.getItem(13).getType().name();
                         }

@@ -8,6 +8,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import red.man10.gacha.GachaPlugin;
 
 public class MySQLFunc {
     String HOST = null;

@@ -8,14 +8,21 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import red.man10.MySQLFunc;
+import red.man10.MySQLManager;
 import red.man10.VaultManager;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Base64;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -29,6 +36,8 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     HashMap<Player,String> playerState = new HashMap<>();
 
     String prefix = "§6[§aMg§fac§dha§6]§f§l";
+
+    MySQLManager mysql = null;
 
     public boolean someOneInMenu = false;
     public boolean onLockDown = false;
@@ -51,16 +60,52 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             configFunction.createGachaConfig();
         }
     }
+
         @Override
         public void onEnable() {
             // Plugin startup logic
             this.getServer().getPluginManager().registerEvents(this,this);
+            this.saveDefaultConfig();
             getCommand("mgacha").setExecutor(new GachaCommand(this));
+            getCommand("mgachadb").setExecutor(new GachaDBCommand(this));
             vault = new VaultManager(this);
             configFunction.createSignConfig();
             configFunction.searchForMissingSigns();
             loadConfig();
+            mysql = new MySQLManager(this,"mgacha");
+            createTable();
+        }
 
+    public String currentTime(){
+
+        //long timestamp = 1371271256;
+        //Date date = new Date(timestamp * 1000);
+
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy'-'MM'-'dd' 'HH':'mm':'ss");
+        Bukkit.getLogger().info("datetime ");
+        String currentTime = "'"+sdf.format(date)+"'";
+        Bukkit.getLogger().info(currentTime);
+        return currentTime;
+    }
+
+
+    void createTable(){
+        mysql.execute("CREATE TABLE `man10_gacha` (\n" +
+                "\t`id` INT NOT NULL AUTO_INCREMENT,\n" +
+                "\t`uuid` VARCHAR(64) NOT NULL DEFAULT '0',\n" +
+                "\t`username` VARCHAR(32) NOT NULL DEFAULT '0',\n" +
+                "\t`gacha` VARCHAR(32) NOT NULL DEFAULT '0',\n" +
+                "\t`price` DOUBLE NOT NULL DEFAULT '0',\n" +
+                "\t`item` VARCHAR(64) NULL DEFAULT '0',\n" +
+                "\t`world` VARCHAR(64) NULL DEFAULT '0',\n" +
+                "\t`x` DOUBLE NULL DEFAULT '0',\n" +
+                "\t`y` DOUBLE NULL DEFAULT '0',\n" +
+                "\t`z` DOUBLE NULL DEFAULT '0',\n" +
+                "\t`time` DATETIME NULL DEFAULT NULL,\n" +
+                "\tPRIMARY KEY (`id`)\n" +
+                ")ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8" +
+                ";\n");
         }
 
         @EventHandler
@@ -103,9 +148,9 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             return;
                         }
                         double balance = vault.getBalance(uuid);
-                        ItemStack item = gachaConfig.getItemStack("gacha." + id + ".ticket");
-                        int ammount = item.getAmount();
                         if(gachaConfig.getString("gacha." + id + ".payType").equalsIgnoreCase("ticket")) {
+                            ItemStack item = gachaConfig.getItemStack("gacha." + id + ".ticket");
+                            int ammount = item.getAmount();
                             ItemStack itemInHand = p.getInventory().getItemInMainHand();
                             if(itemInHand.getType() == item.getType()){
                                 if(item.getItemMeta() == null || itemInHand.getItemMeta().toString().equalsIgnoreCase(item.getItemMeta().toString())){
@@ -120,7 +165,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                                     p.getInventory().getItemInMainHand().setAmount(p.getInventory().getItemInMainHand().getAmount() - ammount);
                                     playerState.put(p, "rolling");
                                     someOneInMenu = true;
-                                    gachaGUI.spinMenu(p, linkedChest, 1, gachaConfig.getString("gacha." + id + ".title"));
+                                    gachaGUI.spinMenu(p, linkedChest, 3, gachaConfig.getString("gacha." + id + ".title"),0,e.getClickedBlock().getLocation());
                                     return;
                                 }
                                 p.sendMessage(prefix + item.getItemMeta().getDisplayName() + "§fが" + ammount + "枚必要です");
@@ -144,7 +189,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             vault.withdraw(uuid, gachaConfig.getDouble("gacha." + id + ".price"));
                             playerState.put(p, "rolling");
                             someOneInMenu = true;
-                            gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"));
+                            gachaGUI.spinMenu(p, linkedChest, 3, gachaConfig.getString("gacha." + id + ".title"),gachaConfig.getDouble("gacha." + id + ".price"),e.getClickedBlock().getLocation());
                         }
                     }
                 }

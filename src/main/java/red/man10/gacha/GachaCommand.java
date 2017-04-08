@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.Set;
 
 /**
@@ -30,7 +31,6 @@ public class GachaCommand implements CommandExecutor {
             showHelp(sender);
             return false;
         }
-
         if(args[0].equalsIgnoreCase("setenablewin")){
             if(!p.hasPermission("man10.gacha.setenablewin")){
                 p.sendMessage(plugin.prefix + "あなたには勝利設定する権限はありません");
@@ -54,7 +54,7 @@ public class GachaCommand implements CommandExecutor {
             return true;
         }
 
-        if(args[0].equalsIgnoreCase("setenablewinmessage")){
+        if(args[0].equalsIgnoreCase("setenablewinmsg")){
             if(!p.hasPermission("man10.gacha.setenablewinmessage")){
                 p.sendMessage(plugin.prefix + "あなたには勝利メッセージを設定する権限はありません");
                 return true;
@@ -77,7 +77,7 @@ public class GachaCommand implements CommandExecutor {
             return true;
         }
 
-        if(args[0].equalsIgnoreCase("setwinmessage")){
+        if(args[0].equalsIgnoreCase("setwinmsg")){
             if(!p.hasPermission("man10.gacha.setwinmessage")){
                 p.sendMessage(plugin.prefix + "あなたには勝利メッセージを設定する権限はありません");
                 return true;
@@ -187,6 +187,9 @@ public class GachaCommand implements CommandExecutor {
                 String title = args[3].replaceAll("&", "§");
                 String payType = args[4];
                 double price = Double.parseDouble(args[5]);
+                if(payType.equalsIgnoreCase("ticket")){
+                    price = 0;
+                }
                 int result = plugin.configFunction.createGacha(name, linkedChest, title, payType, price, p.getInventory().getItemInMainHand(), p);
                 if(result != 0){
                     return true;
@@ -237,13 +240,13 @@ public class GachaCommand implements CommandExecutor {
         p.sendMessage("§c/mgacha delete - ガチャを消去する");
         p.sendMessage("§c/mgacha setprice - ガチャの価格を設定する");
         p.sendMessage("§c/mgacha setenablewin - ガチャの勝利設定をする");
-        p.sendMessage("§c/mgacha setenablewinmessage - ガチャの勝利時のメッセージを設定する");
-        p.sendMessage("§c/mgacha setwinmessage - 勝利時のメッセージを設定");
-        p.sendMessage("§c/mgacha setwinmessage - 勝利時のメッセージを設定");
+        p.sendMessage("§c/mgacha setenablewinmsg - ガチャの勝利時のメッセージを設定する");
+        p.sendMessage("§c/mgacha setwinmsg - 勝利時のメッセージを設定");
         p.sendMessage("§c/mgacha placeholders - 勝利メッセージのプレイスホルダーを表示する");
         p.sendMessage("§c/mgacha lock - ガチャのロックダウンをトグルする");
         p.sendMessage("§c/mgacha list - 作成されたガチャリストを表示する");
         p.sendMessage("§c/mgacha reload - コンフィグのリロード");
+        p.sendMessage("§c/mgacha get - チケットの取得");
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
         p.sendMessage("§ecreated by takatronix http://takatronix.com");

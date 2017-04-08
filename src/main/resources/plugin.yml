@@ -8,3 +8,4 @@ commands:
    mgacha:
       description: Man10 Gacha(Gambling item machine) system
       permission-message: You don't have <permission>
+   mgachadb:
