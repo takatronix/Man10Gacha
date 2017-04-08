@@ -52,7 +52,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             configFunction.createSignConfig();
         }
         signsConfig = YamlConfiguration.loadConfiguration(f);
-
+        this.reloadConfig();
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
         gachaConfig = YamlConfiguration.loadConfiguration(ff);
