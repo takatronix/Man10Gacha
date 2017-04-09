@@ -51,6 +51,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         if(!f.exists()){
             configFunction.createSignConfig();
         }
+        createTable();
         signsConfig = YamlConfiguration.loadConfiguration(f);
         this.reloadConfig();
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
