@@ -34,6 +34,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     VaultManager vault = null;
 
     HashMap<Player,String> playerState = new HashMap<>();
+    HashMap<String,ItemStack[]> gachaItems = new HashMap<>();
 
     String prefix = "§6[§aMg§fac§dha§6]§f§l";
 
@@ -48,9 +49,6 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     public void loadConfig(){
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File f = new File(dataa, File.separator + "signs.yml");
-        if(!f.exists()){
-            configFunction.createSignConfig();
-        }
         createTable();
         signsConfig = YamlConfiguration.loadConfiguration(f);
         this.reloadConfig();
@@ -65,16 +63,15 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         @Override
         public void onEnable() {
             // Plugin startup logic
+            mysql = new MySQLManager(this,"mgacha");
             this.getServer().getPluginManager().registerEvents(this,this);
             this.saveDefaultConfig();
             getCommand("mgacha").setExecutor(new GachaCommand(this));
             getCommand("mgachadb").setExecutor(new GachaDBCommand(this));
             vault = new VaultManager(this);
-            configFunction.createSignConfig();
-            configFunction.searchForMissingSigns();
             loadConfig();
-            mysql = new MySQLManager(this,"mgacha");
             createTable();
+            configFunction.searchForMissingSigns();
         }
 
     public String currentTime(){
@@ -107,6 +104,19 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                 "\tPRIMARY KEY (`id`)\n" +
                 ")ENGINE=InnoDB AUTO_INCREMENT=29 DEFAULT CHARSET=utf8" +
                 ";\n");
+        mysql.execute("CREATE TABLE `man10_gacha_sign` (\n" +
+                "\t`id` INT NOT NULL AUTO_INCREMENT,\n" +
+                "\t`gacha` VARCHAR(50) NOT NULL DEFAULT '0',\n" +
+                "\t`world` VARCHAR(50) NOT NULL DEFAULT '0',\n" +
+                "\t`x` DOUBLE NOT NULL DEFAULT '0',\n" +
+                "\t`y` DOUBLE NOT NULL DEFAULT '0',\n" +
+                "\t`z` DOUBLE NOT NULL DEFAULT '0',\n" +
+                "\t`datetime` DATETIME NULL DEFAULT NULL,\n" +
+                "\tPRIMARY KEY (`id`)\n" +
+                ")\n" +
+                "COLLATE='utf8_general_ci'\n" +
+                "ENGINE=InnoDB\n" +
+                ";");
         }
 
         @EventHandler
@@ -131,7 +141,8 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             e.getPlayer().sendMessage(prefix + "現在このガチャは使用できません");
                             return;
                         }
-                        String id = configFunction.locationToId(e.getClickedBlock().getLocation());
+                        Location l = e.getClickedBlock().getLocation();
+                        String id = configFunction.locationToId(l.getWorld().getName(),l.getX(),l.getY(),l.getZ());
                         if (id == null) {
                             return;
                         }
@@ -224,7 +235,9 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                 Sign s = (Sign) e.getBlock().getState();
                 if(s.getLine(0).equalsIgnoreCase("§b===============")){
                     e.getPlayer().sendMessage(prefix + "§c§l看板の登録を解除しました");
-                    configFunction.deleteSignLocation(s.getLocation());
+                    //configFunction.deleteSignLocation(s.getLocation());
+                    Location l = e.getBlock().getLocation();
+                    configFunction.deleteSignFromLocation(l.getWorld().getName(),l.getX(),l.getY(),l.getZ());
                 }
             }
         }
@@ -253,7 +266,8 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                 }
                 e.getPlayer().sendMessage(prefix + "§a§l看板を登録しました");
                 //この下にアレイからコンフィグに書く処理
-                configFunction.signLocationArrayToFile(e.getBlock().getLocation(), e.getLine(1)); //2017/025 ここ！！！！
+                //configFunction.signLocationArrayToFile(e.getBlock().getLocation(), e.getLine(1)); //2017/025 ここ！！！！
+                mysql.execute("insert into `man10_gacha_sign` values ('0','" + e.getLine(1) + "','" + e.getBlock().getLocation().getWorld().getName() + "','" + e.getBlock().getLocation().getX() + "','" + e.getBlock().getLocation().getY() + "','" + e.getBlock().getLocation().getZ() + "'," + currentTime() + ");");
                 e.setLine(0,"§b===============");
                 e.setLine(1, e.getLine(2).replaceAll("&","§"));
                 e.setLine(3,"§b===============");
