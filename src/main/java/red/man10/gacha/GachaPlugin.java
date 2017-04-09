@@ -65,6 +65,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         @Override
         public void onEnable() {
             // Plugin startup logic
+            mysql = new MySQLManager(this,"mgacha");
             this.getServer().getPluginManager().registerEvents(this,this);
             this.saveDefaultConfig();
             getCommand("mgacha").setExecutor(new GachaCommand(this));
@@ -73,7 +74,6 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             configFunction.createSignConfig();
             configFunction.searchForMissingSigns();
             loadConfig();
-            mysql = new MySQLManager(this,"mgacha");
             createTable();
         }
 
