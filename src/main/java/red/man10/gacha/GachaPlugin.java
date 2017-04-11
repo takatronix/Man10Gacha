@@ -21,10 +21,7 @@ import red.man10.VaultManager;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
 public final class GachaPlugin extends JavaPlugin implements Listener {
 
@@ -34,7 +31,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     VaultManager vault = null;
 
     HashMap<Player,String> playerState = new HashMap<>();
-    HashMap<String,ItemStack[]> gachaItems = new HashMap<>();
+    HashMap<String,List<ItemStack>> gachaItems = new HashMap<>();
 
     String prefix = "§6[§aMg§fac§dha§6]§f§l";
 
@@ -43,22 +40,20 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     public boolean someOneInMenu = false;
     public boolean onLockDown = false;
 
-    public FileConfiguration signsConfig = null;
     public FileConfiguration gachaConfig = null;
 
     public void loadConfig(){
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
         createTable();
-        signsConfig = YamlConfiguration.loadConfiguration(f);
         this.reloadConfig();
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
-        gachaConfig = YamlConfiguration.loadConfiguration(ff);
-        if(!f.exists()){
+        if(!ff.exists()){
             configFunction.createGachaConfig();
         }
+        gachaConfig = YamlConfiguration.loadConfiguration(ff);
+        loadGachaItemsToHashMap();
     }
+
 
         @Override
         public void onEnable() {
@@ -87,6 +82,13 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         return currentTime;
     }
 
+    void loadGachaItemsToHashMap(){
+        Set<String> list = gachaConfig.getConfigurationSection("gacha").getKeys(false);
+        for(int i = 0;i < list.size(); i++){
+            String name = gachaConfig.getString("gacha." + list.toArray()[i] + ".linkedChest");
+            gachaItems.put(name,configFunction.fileItemsToList(name));
+        }
+    }
 
     void createTable(){
         mysql.execute("CREATE TABLE `man10_gacha` (\n" +
@@ -177,7 +179,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                                     p.getInventory().getItemInMainHand().setAmount(p.getInventory().getItemInMainHand().getAmount() - ammount);
                                     playerState.put(p, "rolling");
                                     someOneInMenu = true;
-                                    gachaGUI.spinMenu(p, linkedChest, 3, gachaConfig.getString("gacha." + id + ".title"),0,e.getClickedBlock().getLocation());
+                                    gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"),0,e.getClickedBlock().getLocation());
                                     return;
                                 }
                                 p.sendMessage(prefix + item.getItemMeta().getDisplayName() + "§fが" + ammount + "枚必要です");
@@ -201,7 +203,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                             vault.withdraw(uuid, gachaConfig.getDouble("gacha." + id + ".price"));
                             playerState.put(p, "rolling");
                             someOneInMenu = true;
-                            gachaGUI.spinMenu(p, linkedChest, 3, gachaConfig.getString("gacha." + id + ".title"),gachaConfig.getDouble("gacha." + id + ".price"),e.getClickedBlock().getLocation());
+                            gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"),gachaConfig.getDouble("gacha." + id + ".price"),e.getClickedBlock().getLocation());
                         }
                     }
                 }

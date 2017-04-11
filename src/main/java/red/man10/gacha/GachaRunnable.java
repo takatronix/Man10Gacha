@@ -35,7 +35,7 @@ public class GachaRunnable {
             int count = 1;
             int countcount = 0;
             //int slots = plugin.configFunction.getSlotsFromFile(file);
-            List<ItemStack> items = plugin.configFunction.fileItemsToList(file);
+            List<ItemStack> items = plugin.gachaItems.get(file);
             int[] itemnumber = new int[6];
             public void run() {
                 if (a > count) {

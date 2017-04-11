@@ -245,44 +245,6 @@ public class GachaConfigFunction {
     }
 
 
-    public void deleteSignLocation(Location location) {
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        if (!f.exists()) {
-            createSignConfig();
-            return;
-        }
-        String signId = locationToId(location);
-        List list = data.getList("signs." + signId);
-        java.lang.Object obj = data.get("signs." + signId);
-        if (obj == null) {
-            return;
-        }
-        if (obj != null && list == null) {
-            Location testLoc = (Location) obj;
-            if (testLoc.getX() == location.getX() && testLoc.getY() == location.getY() && testLoc.getZ() == location.getZ() && testLoc.getWorld() == location.getWorld()) {
-                data.set("signs." + signId, null);
-            }
-        }
-        if (obj != null && list != null) {
-            List testlist = data.getList("signs." + signId);
-            for (int i = 0; i < testlist.size(); i++) {
-                Location testLoc = (Location) testlist.get(i);
-                if (testLoc.getX() == location.getX() && testLoc.getY() == location.getY() && testLoc.getZ() == location.getZ() && testLoc.getWorld() == location.getWorld()) {
-                    testlist.remove(testLoc);
-                }
-            }
-            data.set("signs." + signId, testlist);
-        }
-        try {
-            data.save(f);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        plugin.loadConfig();
-    }
-
     public boolean setPrice(String id, double price) {
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
@@ -311,7 +273,7 @@ public class GachaConfigFunction {
                 sign.setLine(2, String.valueOf(price));
                 sign.update();
             } else {
-                deleteSignLocation(loc);
+                deleteSignFromLocation(loc.getWorld().getName(),loc.getX(),loc.getY(),loc.getZ());
             }
         }
     }
@@ -472,18 +434,11 @@ public class GachaConfigFunction {
     }
 
     public String getWinBroadcast(String id) {
-        File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File ff = new File(dataaa, File.separator + "gachas.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(ff);
-        if (!ff.exists()) {
-            createGachaConfig();
-            return null;
-        }
-        java.lang.Object obj = data.get("gacha." + id + ".winMessage");
+        java.lang.Object obj = plugin.gachaConfig.get("gacha." + id + ".winMessage");
         if (obj == null) {
             return null;
         }
-        return data.getString("gacha." + id + ".winMessage");
+        return plugin.gachaConfig.getString("gacha." + id + ".winMessage");
     }
 
     public String locationToId(String wolrd, double x, double y, double z) {

@@ -27,6 +27,10 @@ public class GachaDBCommand implements CommandExecutor {
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player p = (Player) sender;
         if(args[0].equalsIgnoreCase("stats")){
+            if(!p.hasPermission("man10.gacha.status")){
+                p.sendMessage(plugin.prefix + "あなたには勝利メッセージを設定する権限はありません");
+                return true;
+            }
             if(args.length != 2){
                 p.sendMessage(plugin.prefix + "コマンドの使い方が間違っています /mgachadb stats <name>");
                 return true;
