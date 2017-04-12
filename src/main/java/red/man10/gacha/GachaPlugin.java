@@ -43,7 +43,6 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     public FileConfiguration gachaConfig = null;
 
     public void loadConfig(){
-        createTable();
         this.reloadConfig();
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
         File ff = new File(dataaa, File.separator + "gachas.yml");
@@ -54,6 +53,11 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         loadGachaItemsToHashMap();
     }
 
+    public void closeInventory(){
+        for(Player p:Bukkit.getOnlinePlayers()){
+            p.closeInventory();
+        }
+    }
 
         @Override
         public void onEnable() {
@@ -68,6 +72,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             createTable();
             configFunction.searchForMissingSigns();
         }
+
 
     public String currentTime(){
 
@@ -230,6 +235,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         @Override
         public void onDisable() {
             // Plugin shutdown logic
+            closeInventory();
         }
         @EventHandler
         public void onBreakSign(BlockBreakEvent e){

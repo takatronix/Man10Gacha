@@ -1,5 +1,6 @@
 package red.man10.gacha;
 
+import com.mysql.cj.api.mysqla.result.Resultset;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -87,102 +88,22 @@ public class GachaConfigFunction {
     }
 
 
-    public void signLocationArrayToFile(Location l, String id) {
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        if (!f.exists()) {
-            createSignConfig();
-        }
-        java.lang.Object obj = data.get("signs." + id);
-        List list = data.getList("signs." + id);
-        if (obj == null) {
-            data.set("signs." + id, l);
-            try {
-                data.save(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        if (obj != null && list == null) {
-            data.set("signs." + id, null);
-            List<Location> a = new ArrayList<>();
-            a.add((Location) obj);
-            a.add(l);
-            data.set("signs." + id, a.toArray());
-            try {
-                data.save(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return;
-        }
-        list.add(l);
-        data.set("signs." + id, null);
-        data.set("signs." + id, list);
-        //locc.add(l);
-        //data.set("signs." + id, list);
-        try {
-            data.save(f);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+
 
     public List idToLocation(String id) {
         List<Location> loc = new ArrayList();
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        List list = data.getList("signs." + id);
-        if (!f.exists()) {
-            createSignConfig();
-            return null;
+        ResultSet result = plugin.mysql.query("SELECT * FROM man10_gacha_sign WHERE gacha = '" + id + "'");
+        try {
+            while(result.next()) {
+                Location l = new Location(Bukkit.getWorld(result.getString("world")), result.getDouble("x"),result.getDouble("y"),result.getDouble("z"));
+                loc.add(l);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        java.lang.Object obj = data.get("signs." + id);
-        if (obj == null) {
-            loc.add((Location) obj);
-            return null;
-        }
-        if (obj != null && list == null) {
-            loc.add((Location) obj);
-            return loc;
-        }
-        return list;
+        return loc;
     }
 
-    public String locationToId(Location l) {
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        Set<String> list = data.getConfigurationSection("signs").getKeys(false);
-        if (!f.exists()) {
-            createSignConfig();
-            return "none";//ポイント１
-        }
-        for (int i = 0; i < list.size(); i++) {
-            java.lang.Object obj = data.get("signs." + list.toArray()[i]);
-            List objlist = data.getList("signs." + list.toArray()[i]);
-            if (obj == null) {
-            }
-            if (obj != null && objlist == null) {
-                Location loc = (Location) obj;
-                if (loc.getX() == l.getX() && loc.getY() == l.getY() && loc.getZ() == l.getZ() && loc.getWorld() == l.getWorld()) {
-                    return (String) list.toArray()[i];
-                }
-            }
-            if (obj != null && objlist != null) {
-                for (int ii = 0; ii < objlist.size(); ii++) {
-                    Location loc = (Location) objlist.get(ii);
-                    if (loc.getX() == l.getX() && loc.getY() == l.getY() && loc.getZ() == l.getZ() && loc.getWorld() == l.getWorld()) {
-                        return (String) list.toArray()[i];
-                    }
-                }
-            }
-        }
-        return null;
-    }
 
     public void createGachaConfig() {
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
@@ -237,7 +158,6 @@ public class GachaConfigFunction {
         }
         try {
             data.save(ff);
-            p.sendMessage("ガチャが保存されました : " + name);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -321,6 +241,7 @@ public class GachaConfigFunction {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        plugin.reloadConfig();
     }
 
     public boolean setGachaWin(String id, boolean state) {

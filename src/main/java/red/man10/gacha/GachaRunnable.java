@@ -61,7 +61,7 @@ public class GachaRunnable {
                     }
                     if (countcount == 40) {
                         String name = inv.getItem(13).getItemMeta().getDisplayName();
-                        plugin.mysql.execute("insert into `man10_gacha` values ('0', '" + p.getUniqueId() +  "', '" + p.getName() + "', '" + file + "', '" + price + "', '" + Base64.getEncoder().encodeToString(name.getBytes()) + "', '" + l.getWorld().getName() + "', '" + l.getX() + "', '" + l.getY() + "', '" + l.getZ() + "', " + plugin.currentTime() + ");");
+                        plugin.mysql.execute("insert into `man10_gacha` values ('0', '" + p.getUniqueId() +  "', '" + p.getName() + "', '" + file + "', '" + price + "', '" + "null" + "', '" + l.getWorld().getName() + "', '" + l.getX() + "', '" + l.getY() + "', '" + l.getZ() + "', " + plugin.currentTime() + ");");
                         if (name == null) {
                             name = inv.getItem(13).getType().name();
                         }

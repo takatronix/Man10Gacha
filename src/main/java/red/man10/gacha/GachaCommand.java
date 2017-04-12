@@ -210,6 +210,11 @@ public class GachaCommand implements CommandExecutor {
             p.sendMessage("§c%TITLE% 当てたガチャのタイトルを表示する");
             p.sendMessage("§5===================================");
         }
+        if(args[0].equalsIgnoreCase("createtable")){
+            p.sendMessage(plugin.prefix + "テーブルを作成しました");
+            plugin.createTable();
+            return true;
+        }
         if(args[0].equalsIgnoreCase("help")){
             showHelp(sender);
             return true;
@@ -246,6 +251,7 @@ public class GachaCommand implements CommandExecutor {
         p.sendMessage("§c/mgacha lock - ガチャのロックダウンをトグルする");
         p.sendMessage("§c/mgacha list - 作成されたガチャリストを表示する");
         p.sendMessage("§c/mgacha reload - コンフィグのリロード");
+        p.sendMessage("§c/mgacha createtable - テーブルを作成 ");
         p.sendMessage("§c/mgacha get - チケットの取得");
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
