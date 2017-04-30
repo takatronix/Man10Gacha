@@ -117,6 +117,8 @@ public class GachaConfigFunction {
         }
     }
 
+
+
     public int createGacha(String name, String linkedChest, String title, String payType, double price, ItemStack ticket, Player p) {
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + linkedChest + ".yml");
@@ -197,6 +199,9 @@ public class GachaConfigFunction {
             }
         }
     }
+
+
+
 
     public boolean deleteGacha(String id) {// 2017/03/27
         File dataaa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
