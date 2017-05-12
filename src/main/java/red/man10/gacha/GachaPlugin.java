@@ -91,7 +91,10 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
         Set<String> list = gachaConfig.getConfigurationSection("gacha").getKeys(false);
         for(int i = 0;i < list.size(); i++){
             String name = gachaConfig.getString("gacha." + list.toArray()[i] + ".linkedChest");
-            gachaItems.put(name,configFunction.fileItemsToList(name));
+            List<ItemStack> items = configFunction.fileItemsToList(name);
+            if(items != null){
+                gachaItems.put(name,items);
+            }
         }
     }
 

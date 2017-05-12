@@ -51,6 +51,9 @@ public class GachaConfigFunction {
         String fileName = file;
         File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + fileName + ".yml");
+        if(!f.exists()){
+            return null;
+        }
         FileConfiguration data = YamlConfiguration.loadConfiguration(f);
         for (int i = 0; i < getSlotsFromFile(file); i++) {
             if (data.getItemStack("item." + i) != null) {
