@@ -72,21 +72,6 @@ public class GachaConfigFunction {
         return removed;
     }*/
 
-    public void createSignConfig() {
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Gacha").getDataFolder(), File.separator);
-        File f = new File(dataa, File.separator + "signs.yml");
-        FileConfiguration data = YamlConfiguration.loadConfiguration(f);
-        if (!f.exists()) {
-            try {
-                f.createNewFile();
-                data.set("signs", "");
-                data.save(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
 
 
 

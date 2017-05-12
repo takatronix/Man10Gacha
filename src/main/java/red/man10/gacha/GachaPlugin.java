@@ -242,9 +242,17 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             if(e.getBlock().getType() == Material.SIGN_POST || e.getBlock().getType() == Material.WALL_SIGN){
                 Sign s = (Sign) e.getBlock().getState();
                 if(s.getLine(0).equalsIgnoreCase("§b===============")){
+                    Location l = e.getBlock().getLocation();
+                    String result = configFunction.locationToId(l.getWorld().getName(),l.getX(),l.getY(),l.getZ());
+                    if(result == null){
+                        return;
+                    }
+                    if(!e.getPlayer().hasPermission("man10.gacha.removesign")){
+                        e.getPlayer().sendMessage(prefix + "§c§lあなたには看板を解除する権限はありません");
+                        return;
+                    }
                     e.getPlayer().sendMessage(prefix + "§c§l看板の登録を解除しました");
                     //configFunction.deleteSignLocation(s.getLocation());
-                    Location l = e.getBlock().getLocation();
                     configFunction.deleteSignFromLocation(l.getWorld().getName(),l.getX(),l.getY(),l.getZ());
                 }
             }
