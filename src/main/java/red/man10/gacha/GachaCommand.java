@@ -253,6 +253,7 @@ public class GachaCommand implements CommandExecutor {
         p.sendMessage("§c/mgacha reload - コンフィグのリロード");
         p.sendMessage("§c/mgacha createtable - テーブルを作成 ");
         p.sendMessage("§c/mgacha get - チケットの取得");
+        p.sendMessage("§c Man10 Gacha V2.1");
         p.sendMessage("§e============== §d●§f●§a●§eMan10ガチャ§d●§f●§a● §e===============");
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
         p.sendMessage("§ecreated by takatronix http://takatronix.com");

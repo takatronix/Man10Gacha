@@ -250,7 +250,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                     if(result == null){
                         return;
                     }
-                    if(!e.getPlayer().hasPermission("man10.gacha.removesign")){
+                    if(!e.getPlayer().hasPermission("man10.gacha.sign.removesign")){
                         e.getPlayer().sendMessage(prefix + "§c§lあなたには看板を解除する権限はありません");
                         return;
                     }
