@@ -211,6 +211,10 @@ public class GachaCommand implements CommandExecutor {
             p.sendMessage("§5===================================");
         }
         if(args[0].equalsIgnoreCase("createtable")){
+            if(!p.hasPermission("man10.gacha.createtable")){
+                p.sendMessage(plugin.prefix + "あなたには権限がありません");
+                return false;
+            }
             p.sendMessage(plugin.prefix + "テーブルを作成しました");
             plugin.createTable();
             return true;
@@ -258,7 +262,7 @@ public class GachaCommand implements CommandExecutor {
         p.sendMessage("§ehttp://man10.red Minecraft Man10 Server");
         p.sendMessage("§ecreated by takatronix http://takatronix.com");
         p.sendMessage("§ecreated by takatronix http://twitter.com/takatronix");
-        p.sendMessage("§ealso created by Sho0");
+        p.sendMessage("§9created by Sho0 §bTwitter: https://twitter.com/Sho0_dev");
     }
 
 }
