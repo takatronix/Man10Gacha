@@ -8,16 +8,16 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import red.man10.MySQLFunc;
 import red.man10.MySQLManager;
-import red.man10.VaultManager;
+import red.man10.man10vaultapiplus.Man10VaultAPI;
+import red.man10.man10vaultapiplus.Man10VaultAPIPlus;
+import red.man10.man10vaultapiplus.enums.TransactionCategory;
+import red.man10.man10vaultapiplus.enums.TransactionType;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -28,7 +28,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
     GachaRunnable gachaRunnable = new GachaRunnable(this);
     GachaGUI gachaGUI = new GachaGUI(this);
     GachaConfigFunction configFunction = new GachaConfigFunction(this);
-    VaultManager vault = null;
+    Man10VaultAPI vault = null;
 
     HashMap<Player,String> playerState = new HashMap<>();
     HashMap<String,List<ItemStack>> gachaItems = new HashMap<>();
@@ -67,7 +67,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
             this.saveDefaultConfig();
             getCommand("mgacha").setExecutor(new GachaCommand(this));
             getCommand("mgachadb").setExecutor(new GachaDBCommand(this));
-            vault = new VaultManager(this);
+            vault = new Man10VaultAPI("Man10Gacha");
             loadConfig();
             createTable();
             configFunction.searchForMissingSigns();
@@ -208,7 +208,7 @@ public final class GachaPlugin extends JavaPlugin implements Listener {
                                 p.sendMessage(prefix + "残金が足りません");
                                 return;
                             }
-                            vault.withdraw(uuid, gachaConfig.getDouble("gacha." + id + ".price"));
+                            vault.transferMoneyPlayerToCountry(p.getUniqueId(), gachaConfig.getDouble("gacha." + id + ".price"), TransactionCategory.GAME, TransactionType.FEE, "Normal Gacha SpinCash");
                             playerState.put(p, "rolling");
                             someOneInMenu = true;
                             gachaGUI.spinMenu(p, linkedChest, 2, gachaConfig.getString("gacha." + id + ".title"),gachaConfig.getDouble("gacha." + id + ".price"),e.getClickedBlock().getLocation());

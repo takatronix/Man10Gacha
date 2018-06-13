@@ -14,7 +14,7 @@ import java.util.Base64;
 import java.util.Set;
 
 /**
- * Created by takatronix on 2017/03/22.
+ * Created by takatronix on 2017/03/22
  */
 public class GachaCommand implements CommandExecutor {
 

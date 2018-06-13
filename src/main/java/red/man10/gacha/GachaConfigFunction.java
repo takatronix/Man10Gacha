@@ -33,7 +33,7 @@ public class GachaConfigFunction {
 
     public int getSlotsFromFile(String file) {
         String fileName = file;
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
+        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Chest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + fileName + ".yml");
         FileConfiguration data = YamlConfiguration.loadConfiguration(f);
         boolean isLargeChest = data.getBoolean("isLargeChest");
@@ -49,7 +49,7 @@ public class GachaConfigFunction {
     public List<ItemStack> fileItemsToList(String file) {
         List<ItemStack> items = new ArrayList<>();
         String fileName = file;
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
+        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Chest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + fileName + ".yml");
         if(!f.exists()){
             return null;
@@ -108,7 +108,7 @@ public class GachaConfigFunction {
 
 
     public int createGacha(String name, String linkedChest, String title, String payType, double price, ItemStack ticket, Player p) {
-        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("MChest").getDataFolder(), File.separator + "Chests");
+        File dataa = new File(Bukkit.getServer().getPluginManager().getPlugin("Man10Chest").getDataFolder(), File.separator + "Chests");
         File f = new File(dataa, File.separator + linkedChest + ".yml");
 
         if (payType.equalsIgnoreCase("ticket") && ticket.getType() == Material.AIR) {
